@@ -1,0 +1,16 @@
+# Secrets — never commit keys
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+
+# Generated assets (regenerate with npm run avatars / npm run render)
+avatars/
+renders/
+audio/
+
+# OS / editor
+.DS_Store
+*.log

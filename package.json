@@ -1,0 +1,15 @@
+{
+  "name": "vidforge-phase0",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Phase 0 gate: prove script -> ElevenLabs TTS -> fal.ai avatar render -> mp4, end to end",
+  "scripts": {
+    "avatars": "node src/generate-avatars.mjs",
+    "render": "node src/render.mjs"
+  },
+  "dependencies": {
+    "@fal-ai/client": "^1.2.0",
+    "dotenv": "^16.4.5"
+  }
+}
