@@ -47,6 +47,7 @@ create table if not exists posted_clips (
   platform text not null,
   post_url text,
   views_snapshot jsonb not null default '[]', -- array of {timestamp, views}
+  watch_time_snapshot jsonb not null default '[]', -- array of {timestamp, avg_watch_seconds, completion_rate} — manual paste in MVP, feeds Watch Time Canvas later
   cpm_rate numeric,
   created_at timestamptz not null default now()
 );

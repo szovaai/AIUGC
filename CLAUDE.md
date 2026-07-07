@@ -3,6 +3,7 @@
 Solo-builder SaaS. Core loop: ingest long-form video → transcribe (ElevenLabs Scribe) →
 LLM moment scoring → auto-cut/caption (ffmpeg) → manual distribution + earnings tracking.
 The current plan of record is `SNIPPT-MVP.md` — read it before doing any work in this repo.
+`WATCH-TIME-CANVAS.md` is the post-MVP vision (do not build from it before Phase 4 passes).
 `PLAN.md` is the archived VidForge avatar-SaaS plan, kept because the avatar pipeline
 returns as a Phase 5 add-on.
 

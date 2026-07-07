@@ -81,6 +81,11 @@ fal.ai + ElevenLabs + Kling Avatar pipeline. Two Node ESM scripts exist (`src/ge
 
 Keeping these out is intentional — the MVP proves the core loop (ingest → score → cut → caption → track) works end-to-end with a human in the loop at each gate, before automating any of it.
 
+The post-MVP direction (retention-curve prediction, cross-video pattern memory, canvas
+boards, hook A/B variants, loop-optimized editing, watch-time feedback into scoring)
+lives in `WATCH-TIME-CANVAS.md`. It changes nothing above; the MVP data model already
+leaves the seams it needs (e.g. `posted_clips.watch_time_snapshot`).
+
 ---
 
 ## 4. Tech Stack (confirmed, reusing what's already decided)
