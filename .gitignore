@@ -6,10 +6,12 @@
 # Dependencies
 node_modules/
 
-# Generated assets (regenerate with npm run avatars / npm run render)
+# Generated assets (regenerate with npm run avatars / npm run render / npm run ingest)
 avatars/
 renders/
 audio/
+media/
+transcripts/
 
 # OS / editor
 .DS_Store

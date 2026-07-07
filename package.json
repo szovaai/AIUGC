@@ -1,15 +1,17 @@
 {
-  "name": "vidforge-phase0",
-  "version": "0.1.0",
+  "name": "snippt",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "Phase 0 gate: prove script -> ElevenLabs TTS -> fal.ai avatar render -> mp4, end to end",
+  "description": "Snippt — AI clipping engine: ingest long-form video, score clip-worthy moments, cut/caption/track. Includes the frozen Phase 0 avatar pipeline (future add-on).",
   "scripts": {
+    "ingest": "node src/ingest.mjs",
     "avatars": "node src/generate-avatars.mjs",
     "render": "node src/render.mjs"
   },
   "dependencies": {
     "@fal-ai/client": "^1.2.0",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "dotenv": "^16.4.5"
   }
 }
