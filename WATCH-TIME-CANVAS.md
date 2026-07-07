@@ -1,6 +1,6 @@
 # Watch Time Canvas — Snippt Vision Doc (post-MVP)
 
-**Status:** Vision layer on top of `SNIPPT-MVP.md`. Nothing here changes the MVP phase
+**Status:** Vision layer on top of `SNIPPT-MVP.md`. Phase 5 there is the Autonomous Clipper Agent; everything below layers on top of it as Phase 5.5+ once the agent generates real posted-clip performance data. Nothing here changes the MVP phase
 gates. This doc exists so post-MVP work has a north star and so MVP code leaves the
 right seams open. Do not build any of this before "SNIPPT MVP LIVE" (Phase 4 gate).
 
@@ -14,13 +14,13 @@ library from actual retention performance.
 
 ## The six innovations, mapped to phases
 
-### 1. Retention-curve prediction (Phase 5)
+### 1. Retention-curve prediction (Phase 5.5)
 Not a 0–100 "viral score" — a predicted drop-off curve per clip: first-3-seconds bounce
 point, mid-clip lull, whether the ending loops back to the hook (rewatch bait).
 *MVP seam:* Phase 2 scoring output is structured jsonb, so extra prediction fields can
 be added without schema churn.
 
-### 2. Cross-video pattern memory (Phase 6)
+### 2. Cross-video pattern memory (Phase 5.5+)
 Poppy's cross-referencing pointed at your own performance data: "your highest watch-time
 clips open with a question," "clips under 34s retain 40% better in this niche."
 Requires a library of tracked clips with real watch-time data — which is why the MVP
@@ -33,18 +33,18 @@ version. The MVP data model is already a tree (source_videos → transcripts →
 clip_candidates → clips → posted_clips), so the canvas is a rendering of existing
 relations, not a new backend.
 
-### 4. Hook A/B variants per clip (Phase 5 — first post-MVP feature)
+### 4. Hook A/B variants per clip (Phase 5.5 — first learning-loop feature)
 Three opening-hook variants per clip (question / bold claim / pattern-interrupt),
 batch-exported and tagged as a watch-time experiment. Cheapest of the six to ship:
 it's a prompt change in Phase 2 scoring plus a variant column on clips.
 
-### 5. Loop-optimized editing by default (Phase 5)
+### 5. Loop-optimized editing by default (Phase 5.5)
 Auto-detect whether the last ~2 seconds can be trimmed/reframed so the ending visually
 rhymes with the opening — the biggest single lever for TikTok/Reels loop credit, and no
 competitor does it automatically. Lands in the Phase 3 ffmpeg cut module as an optional
 pass; MVP cut logic stays simple.
 
-### 6. Watch-time leaderboard retraining the scorer (Phase 6 — the closed loop)
+### 6. Watch-time leaderboard retraining the scorer (Phase 5.5 — the closed loop)
 Actual watch-time data from posted clips feeds back into the Phase 2 moment-scoring
 prompt as few-shot examples of what retained. This is the loop Crayo and Poppy both
 leave open, and the moat: the tool gets better with every clip a user posts.

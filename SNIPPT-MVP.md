@@ -22,12 +22,12 @@ Ingest → Transcribe → Score moments → Auto-cut → Caption/reformat → Di
 Each phase must pass its smoke test before the next phase begins. This mirrors the Sycado/VidForge discipline already in place — no capability is marketed as LIVE without a live test passing.
 
 ### Phase 0 — ALREADY COMPLETE, DO NOT TOUCH
-fal.ai + ElevenLabs + Kling Avatar pipeline. Two Node ESM scripts exist (`src/generate-avatars.mjs`, `src/render.mjs`). Leave as-is. This becomes the "Avatar Add-On" module later (Phase 5+).
+fal.ai + ElevenLabs + Kling Avatar pipeline. Two Node ESM scripts exist (`src/generate-avatars.mjs`, `src/render.mjs`). Leave as-is. This becomes the "Avatar Add-On" module later (deferred, post-MVP).
 
-> **HONEST-STATUS annotation (2026-07-07, per §6):** "complete" here means the code is
+> **HONEST-STATUS annotation (2026-07-07, per §7):** "complete" here means the code is
 > written, syntax-checked, and frozen — the gate render itself has NOT yet completed
 > successfully (cloud environment network policy blocked fal.ai). The avatar smoke test
-> remains outstanding and is deferred with the rest of the Phase 5 add-on.
+> remains outstanding and is deferred with the rest of the avatar add-on.
 
 ### Phase 1 — Ingest + Transcribe (new)
 **Goal:** Take a long-form video URL or upload, produce a clean timestamped transcript.
@@ -71,41 +71,73 @@ fal.ai + ElevenLabs + Kling Avatar pipeline. Two Node ESM scripts exist (`src/ge
 
 ## 3. What Is Explicitly OUT of MVP scope (future phases, not now)
 
-- Auto-posting/API integration with TikTok/Instagram/YouTube (Phase 5+)
-- Live view-count API tracking (Phase 5+)
+- Auto-posting/API integration with TikTok/Instagram/YouTube (Phase 5)
+- Live view-count API tracking (Phase 5)
+- Job-sourcing agent that scans marketplaces for campaigns (Phase 5)
 - Marketplace / multi-sided brand-clipper campaign system like ClipAffiliates (Phase 6+)
 - Fraud detection / bot-view filtering (Phase 6+)
 - Face-tracking auto-crop for vertical reformat (nice-to-have, not blocking)
-- Kling avatar overlay integration into clips (Phase 5+, reuses Phase 0 code untouched)
+- Kling avatar overlay integration into clips (deferred, reuses Phase 0 code untouched)
 - Multi-language dubbing (later)
+- Watch Time Canvas cross-video pattern memory (Phase 5.5, layered on top once Phase 5 agent has enough posted-clip data to learn from — see `WATCH-TIME-CANVAS.md`)
 
-Keeping these out is intentional — the MVP proves the core loop (ingest → score → cut → caption → track) works end-to-end with a human in the loop at each gate, before automating any of it.
-
-The post-MVP direction (retention-curve prediction, cross-video pattern memory, canvas
-boards, hook A/B variants, loop-optimized editing, watch-time feedback into scoring)
-lives in `WATCH-TIME-CANVAS.md`. It changes nothing above; the MVP data model already
-leaves the seams it needs (e.g. `posted_clips.watch_time_snapshot`).
+Keeping these out of the MVP is intentional — Phases 1-4 prove the core loop (ingest → score → cut → caption → track) works end-to-end with a human in the loop at each gate, before any of it runs unattended.
 
 ---
 
-## 4. Tech Stack (confirmed, reusing what's already decided)
+## 4. Phase 5 — Autonomous Clipper Agent (the "80/20 hands-off" goal)
+
+**Goal:** Once Phases 1-4 pass their smoke tests with a human approving every step, start removing the human from individual steps one at a time — never all at once. This phase is explicitly NOT "flip a switch to full auto." It's a sequence of sub-gates, each of which can be dialed back to manual if quality drops.
+
+**Reality check first — the honest constraints:**
+- TikTok, Instagram, and YouTube do not allow unrestricted bot-posting. Auto-posting must go through each platform's official API (TikTok Content Posting API, Meta Graph API, YouTube Data API) — these require app review/approval and have rate limits. This is buildable, but it's an API-integration project, not a scraping shortcut, and approval timelines are outside our control.
+- Clipping marketplaces (Whop, Vyro, ClipAffiliates) require KYC — a real human identity — before a clipper can join campaigns. An agent cannot pass KYC on Jason's behalf; it can only act *after* Jason's account is verified.
+- Job-sourcing (finding new campaigns automatically) has no universal public API across marketplaces. This sub-feature likely requires a browser-automation agent rather than a clean API integration, and is the least reliable part of the stack — build it last, expect it to break first when sites change.
+- Given the above, "100% hands-off" is not honestly achievable without violating platform ToS somewhere. **80/20 is the real target: agent handles the repetitive 80% (discovery, clipping, captioning, posting), Jason handles the 20% that requires a verified human (account auth, spend/payout decisions, periodic quality spot-checks).**
+
+**Sub-gates (each with its own smoke test, each independently toggleable back to manual):**
+
+### 5a. Auto-posting agent
+- Connect Snippt to TikTok Content Posting API + Meta Graph API (Instagram Reels) + YouTube Data API using Jason's verified accounts (OAuth, stored securely)
+- Agent takes an approved, finished clip from Phase 3/4 and posts it automatically with pre-set caption/hashtag templates
+- **Smoke test:** 5 real clips auto-posted across all 3 platforms with zero manual steps, posts appear correctly, no ToS strikes after 7 days
+- **Toggle:** if a platform flags/limits the account, this sub-gate reverts to manual posting instantly — do not keep pushing through a warning
+
+### 5b. Job-discovery agent
+- Browser-automation agent logs into Jason's verified accounts on Whop/Vyro/ClipAffiliates, checks for new campaigns matching saved niche/CPM preferences, and surfaces them in the Snippt dashboard as "available jobs"
+- Human (Jason) still clicks "accept" on a job — this is the first sub-gate we do NOT fully automate, since accepting a paid campaign is a financial commitment
+- **Smoke test:** agent correctly surfaces 3 real campaigns Jason would have found manually, with correct CPM/terms displayed, over a 1-week period with no missed campaigns
+
+### 5c. End-to-end pipeline stitching
+- Once 5a and 5b are independently passing, connect them: accepted job → source video auto-ingested → Phase 1-3 pipeline runs unattended → best-scoring clips auto-posted via 5a → tracked automatically
+- Human checkpoint remains: a daily digest ("Snippt clipped and posted 12 clips today, here's what went out") rather than per-clip approval
+- **Smoke test:** one full week where Jason does nothing but review the daily digest and approve/reject new job offers. Earnings tracked, no platform strikes, no bad clips posted publicly. Only after this passes for 2 consecutive weeks should per-clip approval be considered optional
+
+### Phase 5.5 — Watch Time Canvas learning loop
+Once Phase 5 has generated real posted-clip performance data, feed it back into the Phase 2 scoring prompt (retention-curve prediction, hook A/B variants, loop-optimized endings). This turns Snippt from "clips content" into "learns what YOUR audience specifically rewatches" — the actual moat versus Crayo/ClipGOAT/Opus Clip, none of which close this loop. Full spec: `WATCH-TIME-CANVAS.md`.
+
+**Guardrail that applies to all of Phase 5:** no sub-gate goes live "always auto-post everything" until it's run in a supervised/shadow mode — agent proposes the action, human sees it before it happens — for at least 2 weeks with zero errors. Same honesty discipline as the rest of this doc: nothing is called hands-off until it's proven hands-off.
+
+---
+
+## 5. Tech Stack (confirmed, reusing what's already decided)
 
 - Next.js App Router
 - Supabase (transcripts, clip_candidates, clips, posted_clips tables — new, additive)
 - OpenRouter for LLM scoring
 - ElevenLabs for transcription (Scribe)
 - ffmpeg for cutting/captioning/reformatting
-- fal.ai + Kling — retained, untouched, deferred to Phase 5 avatar add-on
+- fal.ai + Kling — retained, untouched, deferred avatar add-on (post-MVP)
 - Stripe — deferred until there's a paid tier to sell (post-MVP)
 
 ---
 
-## 5. Naming / Branding Note
+## 6. Naming / Branding Note
 
 Product is now **Snippt**. Update UI copy, package.json name, and any user-facing strings — but do NOT rename internal file paths, repo name, or env vars mid-build unless Jason explicitly says so, to avoid breaking the working Phase 0 pipeline. Cosmetic rename only until Phase 4 passes.
 
 ---
 
-## 6. Honesty Rule (carried over from Sycado discipline)
+## 7. Honesty Rule (carried over from Sycado discipline)
 
 No phase is marked complete or "live" without its smoke test passing. No feature is described to anyone (including in this doc, future docs, or marketing copy) as working unless it has been tested end-to-end. This doc itself should be updated in place as phases pass — mark each phase header with ✅ DONE (date) once its smoke test is confirmed by Jason.

@@ -5,7 +5,7 @@ LLM moment scoring → auto-cut/caption (ffmpeg) → manual distribution + earni
 The current plan of record is `SNIPPT-MVP.md` — read it before doing any work in this repo.
 `WATCH-TIME-CANVAS.md` is the post-MVP vision (do not build from it before Phase 4 passes).
 `PLAN.md` is the archived VidForge avatar-SaaS plan, kept because the avatar pipeline
-returns as a Phase 5 add-on.
+returns as a deferred post-MVP add-on.
 
 ## Non-negotiable rules
 
@@ -29,7 +29,7 @@ returns as a Phase 5 add-on.
 - **Phase 1 (ingest + transcribe):** `src/ingest.mjs` written and syntax-checked.
   NOT smoke-tested — this cloud environment's network policy blocks `api.elevenlabs.io`.
 - **Phase 0 avatar pipeline (frozen):** scripts written and syntax-checked. The gate
-  render never completed — same network block on `fal.run`. Deferred to Phase 5.
+  render never completed — same network block on `fal.run`. Deferred (post-MVP avatar add-on).
 - **Supabase:** no project provisioned yet. `migrations/001_snippt_mvp.sql` is ready to
   apply; until then `ingest.mjs` writes transcripts to `./transcripts/*.json` locally.
 
